@@ -1,32 +1,42 @@
-import chalk from "chalk";
 import { Rest } from "../../model";
-import * as util from "../../util";
+import { findInList } from "../../util";
+import { Result } from "./../../model/action";
 
-export default function validate(action: Rest): string | undefined {
+export default function validate(action: Rest): Result {
+  let result: Result = {};
   if (!action.type) {
-    return `${chalk.redBright("x")} type is empty`;
+    result.error = `❌ type is empty`;
+    return result;
   }
   if (action.type != "rest") {
-    return `${chalk.redBright("x")} type is not rest`;
+    result.error = `❌ type is not rest`;
+    return result;
   }
   if (!action.endpoint) {
-    return `${chalk.redBright("x")} endpoint is empty`;
+    result.error = `❌ endpoint is empty`;
+    return result;
   }
   if (!action.method) {
-    return `${chalk.redBright("x")} method is empty`;
+    result.error = `❌ method is empty`;
+    return result;
   }
   if (
-    !util.findInList(
+    !findInList(
       ["get", "post", "put", "patch", "delete"],
       action.method.toLocaleLowerCase()
     )
   ) {
-    return `${chalk.redBright("x")} method ${action.method} is not found`;
+    result.error = `❌ method ${action.method} is not found`;
+    return result;
   }
-  if (!action.respose) {
-    return `${chalk.redBright("x")} response is empty`;
+  if (!action.response) {
+    result.error = `❌ response is empty`;
+    return result;
   }
-  if (!action.respose.statusCode) {
-    return `${chalk.redBright("x")} response.statusCode is empty`;
+  if (!action.response.statusCode) {
+    result.error = `❌ response.statusCode is empty`;
+    return result;
   }
+
+  return result;
 }

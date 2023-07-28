@@ -1,41 +1,76 @@
-import chalk from "chalk";
-import * as model from "../model";
+import { Action, Rest, Tester } from "../model";
+import { Result } from "../model/action";
 import * as http from "./http";
 
-export function validateTester(tester: model.Tester): string | undefined {
+export function validateTester(tester: Tester): Result {
+  let result: Result = {};
   if (!tester.name) {
-    return `${chalk.redBright("x")} tester name is empty`;
+    result.data?.push(`❌ tester name is empty`);
   }
 
-  return;
+  return result;
 }
 
-export function validateActions(actions: model.Action[]): string | undefined {
-  if (actions.length == 0) {
-    return;
-  }
+export function validateActions(actions: Action[]): Result {
+  let result: Result = {};
 
   for (let i = 0; i < actions.length; i++) {
-    let err = validateAction(actions[i]);
-    if (err) {
-      return `action ${i + 1} ${err}`;
+    let result = validateAction(actions[i]);
+    if (result.error) {
+      return result;
     }
   }
 
-  return;
+  return result;
 }
 
-export function validateAction(action: model.Action): string | undefined {
+export function validateAction(action: Action): Result {
+  let result: Result = {};
   if (!action.type) {
-    return `${chalk.redBright("x")} action type is empty`;
+    result.error = `❌ action type is empty`;
+    return result;
   }
 
   if (action.type == "rest") {
-    let err = http.validate(action as model.Rest);
-    if (err) {
-      return err;
+    let result = http.validate(action as Rest);
+    if (result.error) {
+      return result;
     }
   }
 
-  return;
+  return result;
+}
+
+export async function startActions(actions: Action[]): Promise<Result> {
+  let result: Result = {
+    data: [],
+  };
+  if (actions.length == 0) {
+    return result;
+  }
+
+  for (let i = 0; i < actions.length; i++) {
+    let actionResult = await startAction(actions[i]);
+    if (actionResult.error) {
+      return actionResult;
+    }
+
+    result.data?.push(`Action ${i + 1}`);
+    if (actionResult.data) {
+      result.data?.push(...actionResult.data);
+    }
+    result.data?.push(`\n`);
+  }
+
+  return result;
+}
+
+export async function startAction(action: Action): Promise<Result> {
+  let result: Result = {};
+  if (action.type == "rest") {
+    let startResult = await http.start(action as Rest);
+    return startResult;
+  }
+
+  return result;
 }
