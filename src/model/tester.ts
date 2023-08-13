@@ -1,6 +1,6 @@
-import Action from "./action";
+import ActionConfig from "./action";
 
 export default interface Tester {
   name: string;
-  actions: Action[];
+  actions: ActionConfig[];
 }

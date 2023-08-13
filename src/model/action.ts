@@ -1,8 +1,8 @@
-import RabbitMQ from "./rabbitmq";
-import Rest from "./rest";
+import RabbitMQActionConfig from "./rabbitmq";
+import RestActionConfig from "./rest";
 
-export interface BaseAction {
-  type: string;
+export interface BaseActionConfig {
+  type: "rest" | "rabbitmq";
 }
 
 export interface Result {
@@ -10,6 +10,6 @@ export interface Result {
   error?: string;
 }
 
-type Action = Rest | RabbitMQ;
+type ActionConfig = RestActionConfig | RabbitMQActionConfig;
 
-export default Action;
+export default ActionConfig;

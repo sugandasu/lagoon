@@ -1,24 +1,24 @@
 import fs from "fs";
-import * as driver from "./driver";
+import NewAction from "./lib/action";
 import { Tester } from "./model";
+import ActionConfig from "./model/action";
 import logResults from "./util/logResults";
 
 const main = async () => {
   let tester = readTesterFile("tester/2023-07-27.json");
-  let result = driver.validateTester(tester);
-  if (result.error) {
-    console.log(result.error);
-    return;
-  }
-  result = await driver.startActions(tester.actions);
-  if (result.error) {
-    console.log(result);
-    return;
-  }
-
-  if (result.data) {
-    logResults(result.data);
-  }
+  tester.actions.forEach(async (actionConfig: ActionConfig) => {
+    try {
+      let action = NewAction(actionConfig);
+      let result = await action.start();
+      if (result.error) {
+      }
+      if (result.data) {
+        logResults(result.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  });
 };
 
 function readTesterFile(fileName: string): Tester {

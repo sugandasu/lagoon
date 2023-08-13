@@ -1,21 +1,21 @@
-import * as constant from "../constant";
-import { BaseAction } from "./action";
+import { objects } from "../constant";
+import { BaseActionConfig } from "./action";
 
-export interface Payload {
+export interface RestPayload {
   multipart?: boolean;
-  headers?: constant.objects;
-  body?: constant.objects;
+  headers?: objects;
+  body?: objects;
 }
 
-export interface Response {
+export interface RestResponse {
   statusCode: number;
-  headers?: constant.objects;
-  body?: constant.objects;
+  headers?: objects;
+  body?: objects;
 }
 
-export default interface Rest extends BaseAction {
+export default interface RestActionConfig extends BaseActionConfig {
   endpoint: string;
   method: string;
-  payload?: Payload;
-  response: Response;
+  payload?: RestPayload;
+  response: RestResponse;
 }
